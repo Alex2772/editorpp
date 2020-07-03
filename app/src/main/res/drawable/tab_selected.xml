@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="?attr/colorPrimaryDark" />
+        </shape>
+    </item>
+    <!--
+    <item
+        android:left="3dp"
+        android:right="3dp"
+        android:top="3dp">
+        <shape>
+            <solid android:color="#24000000" />
+        </shape>
+    </item>-->
+    <item
+        android:left="4dp"
+        android:right="4dp"
+        android:top="8dp">
+        <shape>
+            <solid android:color="@color/tabBackground" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/divider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="144dp"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha="0.6"
+        android:background="@color/divider_color" />
+</LinearLayout>

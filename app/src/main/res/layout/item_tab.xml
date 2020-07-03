@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:background="@drawable/tab"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:theme="@style/AppTheme.AppBarOverlay">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:gravity="center_vertical"
+        android:maxWidth="150dp"
+        android:minWidth="80dp"
+        android:paddingLeft="2dp"
+        android:paddingTop="6dp"
+        android:text="TextView" />
+
+    <Button
+        android:id="@+id/close"
+        style="@style/Base.Widget.AppCompat.ActionButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:drawableLeft="@drawable/ic_close_black_24dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.Button"
+        android:textSize="14sp" />
+</LinearLayout>

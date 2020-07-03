@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#8ECA34</color>
+    <color name="colorPrimaryDark">#6BA811</color>
+    <color name="colorAccent">#ff6932a1</color>
+    <color name="blackTransparent">#90000000</color>
+    <color name="colorJoystickDots">#aaa</color>
+    <color name="divider_color">#bbb</color>
+    <color name="tabBackground">#eee</color>
+    <color name="colorError">#f00</color>
+    <color name="colorBracketHighlight">#ff0</color>
+    <color name="colorBracketHighlightBg">#446932a1</color>
+</resources>

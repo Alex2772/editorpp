@@ -1,0 +1,10 @@
+<resources>
+    <string-array name="ac_tabulation_symbol">
+        <item>tab</item>
+        <item>whitespaces</item>
+    </string-array>
+    <string-array name="ac_tabulation_symbol_entries">
+        <item>Tab (\\t)</item>
+        <item>Four whitespaces</item>
+    </string-array>
+</resources>

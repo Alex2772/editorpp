@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="File">
+        <menu>
+            <item
+                android:id="@+id/new_file"
+                android:title="New" />
+            <item
+                android:id="@+id/open"
+                android:title="Open..." />
+            <item
+                android:id="@+id/save_dummy"
+                android:title="Save" />
+            <item
+                android:id="@+id/save_as"
+                android:title="Save as..." />
+        </menu>
+    </item>
+    <item android:id="@+id/set_syntax" android:title="Set syntax" >
+        <menu />
+    </item>
+    <item
+        android:id="@+id/settings"
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/action_about" />
+    <item android:title="Exit" />
+</menu>

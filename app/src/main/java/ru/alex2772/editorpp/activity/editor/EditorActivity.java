@@ -5,18 +5,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,17 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.io.DataInputStream;
@@ -48,7 +44,6 @@ import ru.alex2772.editorpp.R;
 import ru.alex2772.editorpp.activity.AboutActivity;
 import ru.alex2772.editorpp.activity.editor.highlight.SyntaxHighlighter;
 import ru.alex2772.editorpp.activity.editor.highlight.SyntaxManager;
-import ru.alex2772.editorpp.activity.editor.highlight.syntax.CppSyntax;
 import ru.alex2772.editorpp.activity.editor.highlight.syntax.IHighlighter;
 import ru.alex2772.editorpp.activity.editor.theme.ThemeManager;
 import ru.alex2772.editorpp.activity.filebrowser.OpenFileBrowserActivity;
@@ -287,6 +282,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             mCurrentTab.setCurrent(false);
         }
         mCurrentTab = mTabs.get(index);
+        mEdit.setEnabled(mCurrentTab.isEditable());
         mEdit.setTextChangedFlag(false);
         mEdit.setText(mCurrentTab.getText());
         mEdit.setTextChangedFlag(true);
@@ -300,9 +296,31 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     }
 
     /**
-     * Сохранение "в тупую", без диалога выбора файла (по возможности).
+     * Sometimes files are big enough to crash the app. This dialog tells user that we will not
+     * do the desired action because file is too big.
+     */
+    private void showVeryBigFileWarning(@StringRes int action) {
+        new AlertDialog.Builder(EditorActivity.this)
+                .setTitle(action)
+                .setMessage(R.string.file_too_big_anr_warning)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create().show();
+
+    }
+
+    /**
+     * Save without save dialog.
      */
     private void saveDummy() {
+        if (mCurrentTab != null && !mCurrentTab.isEditable()) {
+            showVeryBigFileWarning(R.string.save_is_not_available);
+            return;
+        }
         if (new File(mFilePath).exists()) {
             saveFile(mFilePath);
         } else {
@@ -318,9 +336,13 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     }
 
     /**
-     * Форсит открытие диалога выбора файла.
+     * Forces save dialog.
      */
     private void saveAs() {
+        if (mCurrentTab != null && !mCurrentTab.isEditable()) {
+            showVeryBigFileWarning(R.string.save_is_not_available);
+            return;
+        }
         Intent i = new Intent(this, SaveFileBrowserActivity.class);
         i.putExtra("file", mFilePath);
         ActivityCompat.startActivityForResult(this, i, 0, null);
@@ -373,7 +395,27 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                         @Override
                         public void run() {
                             FileTabModel m = new FileTabModel(f.getAbsolutePath(), f.getName());
-                            m.setText(Editable.Factory.getInstance().newEditable(s.toString()));
+
+                            String finalString;
+                            if (s.length() > 0x8000) {
+                                finalString = s.substring(0, 0x8000);
+                                m.setEditable(false);
+                                new AlertDialog.Builder(EditorActivity.this)
+                                        .setTitle(R.string.file_too_big)
+                                        .setMessage(R.string.file_too_big_anr_warning)
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+
+                                            }
+                                        })
+                                        .create().show();
+
+                            } else {
+                                finalString = s.toString();
+                            }
+
+                            m.setText(Editable.Factory.getInstance().newEditable(finalString));
                             mTabs.add(m);
                             setCurrentTab(mTabs.size() - 1);
                             DBHelper.getFileData(EditorActivity.this, m, new Runnable() {
@@ -398,9 +440,9 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     }
 
     /**
-     * Непосредственно сохраняет файл.
+     * Saves the file.
      *
-     * @param path путь для сохранения. Желательно абсолютный.
+     * @param path path to save.
      */
     private void saveFile(final String path) {
         setFilePath(path);
@@ -435,7 +477,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     }
 
     /**
-     * Обновить UI в соответсвии с состоянием сохранения.
+     * Update UI with save state.
      */
     @SuppressLint("SetTextI18n")
     private void setSavedState(SaveState b) {

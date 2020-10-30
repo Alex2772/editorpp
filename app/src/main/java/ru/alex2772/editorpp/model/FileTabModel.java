@@ -18,6 +18,7 @@ public class FileTabModel {
     private int mScrollX;
     private int mScrollY;
     private int mSyntax;
+    private boolean editable = true;
 
 
     public FileTabModel(String filePath, String title) {
@@ -108,4 +109,13 @@ public class FileTabModel {
         mSyntax = syntax;
 
     }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="File">
+    <item android:title="@string/file">
         <menu>
             <item
                 android:id="@+id/new_file"
@@ -16,7 +16,7 @@
                 android:title="Save as..." />
         </menu>
     </item>
-    <item android:id="@+id/set_syntax" android:title="Set syntax" >
+    <item android:id="@+id/set_syntax" android:title="@string/set_syntax" >
         <menu />
     </item>
     <item
@@ -25,5 +25,5 @@
     <item
         android:id="@+id/action_about"
         android:title="@string/action_about" />
-    <item android:title="Exit" />
+    <item android:title="@string/exit" />
 </menu>

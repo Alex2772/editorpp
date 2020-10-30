@@ -529,7 +529,11 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        mEdit.setHighlighter(mSyntaxManager.getSyntaxes().get(mCurrentTab.getSyntax()));
+        try {
+            mEdit.setHighlighter(mSyntaxManager.getSyntaxes().get(mCurrentTab.getSyntax()));
+        } catch (Exception ignored) {
+            // possibly NPE will be catched.
+        }
     }
 
     @Override

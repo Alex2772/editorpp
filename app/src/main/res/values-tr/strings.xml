@@ -105,4 +105,5 @@ Bu uygulama, varsayılan yazı tipi olarak JetBrains Mono kullanır. Daha fazla 
     <string name="v7_preference_off">KAPALI</string>
     <string name="v7_preference_on">AÇIK</string>
     <string name="yesterday">Dün</string>
+    <string name="source_code">Source code</string>
 </resources>

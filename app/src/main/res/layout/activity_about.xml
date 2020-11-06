@@ -31,7 +31,21 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp">
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:linksClickable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                tools:text="@string/source_code" />
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -57,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="all"
+                android:gravity="center"
                 android:linksClickable="true"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
@@ -72,7 +87,8 @@
                 android:text="TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView7" />
+                app:layout_constraintTop_toBottomOf="@+id/textView7"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

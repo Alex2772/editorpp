@@ -80,8 +80,10 @@ public abstract class FileBrowserActivity extends AppCompatActivity implements F
             if (getIntent().getExtras().getString("file") != null) {
                 File f = new File(getIntent().getExtras().getString("file"));
                 getEditText().setText(f.getName());
-                initialOpen(f.getParentFile());
-                return;
+                if (f.getParentFile() != null) {
+                    initialOpen(f.getParentFile());
+                    return;
+                }
             }
         }
         initialOpen(Environment.getDataDirectory());
@@ -180,9 +182,6 @@ public abstract class FileBrowserActivity extends AppCompatActivity implements F
      */
     @Override
     public boolean changeDir(File newDir) {
-        if (newDir == null)
-            return false;
-        mCurrentDir = newDir;
         try {
             changeDirUnsafe(newDir);
         } catch (FileItemAdapter.CouldNotListDirException e) {
@@ -198,6 +197,9 @@ public abstract class FileBrowserActivity extends AppCompatActivity implements F
     }
 
     private void changeDirUnsafe(File newDir) throws FileItemAdapter.CouldNotListDirException {
+        if (newDir == null)
+            return;
         mRecycler.setAdapter(new FileItemAdapter(this, newDir, this));
+        mCurrentDir = newDir;
     }
 }

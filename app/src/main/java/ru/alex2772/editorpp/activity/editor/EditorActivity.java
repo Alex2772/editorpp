@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,8 +22,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -30,6 +33,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Visibility;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
@@ -265,8 +269,12 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                 mEdit.getText().insert(i, "\n");
             }
         });
+
         mEdit.requestFocus();
+
+        handleTitlebarAdditionalLabels();
     }
+
 
 
     public void setCurrentTab(int index) {
@@ -293,6 +301,19 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
         mSaveState = mCurrentTab.getSaveState();
         setFilePath(mCurrentTab.getFilePath());
         mTabsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        handleTitlebarAdditionalLabels();
+    }
+
+    private void handleTitlebarAdditionalLabels() {
+        int v = getResources().getConfiguration().screenWidthDp > 450 ? View.VISIBLE : View.INVISIBLE;
+        findViewById(R.id.fileName).setVisibility(v);
+        findViewById(R.id.statusBar).setVisibility(v);
     }
 
     /**
@@ -568,7 +589,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     public boolean closeFile() {
 
-        if (mSaveState != SaveState.SAVED) {
+        if (mSaveState != SaveState.SAVED && mEdit.getText().length() > 0) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.file_unsaved)
                     .setMessage(R.string.file_unsaved_are_u_sure)

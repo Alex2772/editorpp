@@ -90,7 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|center_horizontal"
-        android:text="Recent files list is empty"
+        android:text="@string/recent_files_list_is_empty"
         android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -26,7 +26,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
     private LayoutInflater mInflater;
     private ArrayList<IFileItem> mListFiles = new ArrayList<>();
 
-    public FileItemAdapter(final Context context, final File currentDir, final ICallback callback) {
+    public FileItemAdapter(final Context context, final File currentDir, final ICallback callback) throws CouldNotListDirException {
         mInflater = LayoutInflater.from(context);
 
         if (currentDir.getParentFile() != null) {
@@ -81,6 +81,8 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
                     }
                 });
             }
+        } else {
+            throw new CouldNotListDirException();
         }
     }
 
@@ -109,7 +111,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
     }
 
     public interface ICallback {
-        void changeDir(File newDir);
+        boolean changeDir(File newDir);
 
         void fileSelected(File targetFile);
     }
@@ -137,5 +139,8 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
         public View getView() {
             return mView;
         }
+    }
+
+    public class CouldNotListDirException extends Throwable {
     }
 }

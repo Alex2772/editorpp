@@ -2,9 +2,12 @@ package ru.alex2772.editorpp.util;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +28,20 @@ import ru.alex2772.editorpp.activity.editor.EditorActivity;
 import ru.alex2772.editorpp.drawable.FileIconDrawable;
 
 public class Util {
-    public static void handleException(Context c, int title, Exception e) {
+    public static void handleException(final Context c, int title, Exception e) {
         AlertDialog.Builder b = new AlertDialog.Builder(c);
         b.setTitle(title);
         if (e instanceof FileNotFoundException) {
             b.setMessage(R.string.not_found_error);
+            b.setNegativeButton(R.string.check_apps_permissions, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", c.getPackageName(), null);
+                    intent.setData(uri);
+                    c.startActivity(intent);
+                }
+            });
         } else if (e instanceof IOException) {
             b.setMessage(R.string.io_error);
         } else {

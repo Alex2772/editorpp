@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import ru.alex2772.editorpp.R;
@@ -78,7 +79,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
                 final LinkedList<FileListModel> items = new LinkedList<>();
                 while (c.moveToNext()) {
-                    items.add(new FileListModel(c.getLong(0), c.getString(1), c.getLong(2)));
+                    // check whether file exists or not
+                    if (new File(c.getString(1)).isFile()) {
+                        items.add(new FileListModel(c.getLong(0), c.getString(1), c.getLong(2)));
+                    }
                 }
                 c.close();
 

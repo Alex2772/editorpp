@@ -23,11 +23,13 @@
     <string name="file_not_readable">Couldn\'t open this file</string>
     <string name="open_file">Open file…</string>
     <string name="saving">Saving…</string>
-    <string name="not_found_error">Target file not found</string>
+    <string name="not_found_error">Target file not found or not enough rights to access this file (check app\'s permissions)</string>
     <string name="loading">Loading, please wait…</string>
     <string name="file_dont_exist">File doesn\'t exist</string>
     <string name="choose_another_file">Please choose another file</string>
     <string name="could_not_open">Could not open</string>
+    <string name="could_not_open_dir">Could not open this directory</string>
+    <string name="could_not_open_permission_denied_dir">Looks like your device has restriction to access this directory.</string>
     <string name="older_files">Older files</string>
     <string name="last_year">Last year</string>
     <string name="last_month">Last month</string>
@@ -61,4 +63,10 @@
     <string name="ok">OK</string>
     <string name="save_is_not_available">Save is not available</string>
     <string name="source_code">Source code</string>
+    <string name="recent_files_list_is_empty">Recent files list is empty</string>
+    <string name="android_permission_manager">Insufficient permissions</string>
+    <string name="android_permission_manager_desc">You have disallowed this app to access filesystem. Without this permission you would not save files using this app.\nAre you sure you want to deny this permission?</string>
+    <string name="try_again">Try again</string>
+    <string name="im_sure">I\'m sure</string>
+    <string name="check_apps_permissions">Check app\'s permissions</string>
 </resources>

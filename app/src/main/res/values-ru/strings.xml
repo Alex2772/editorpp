@@ -23,7 +23,7 @@
     <string name="file_not_readable">Не удаётся открыть этот файл</string>
     <string name="open_file">Открыть файл...</string>
     <string name="saving">Сохранение...</string>
-    <string name="not_found_error">Целевой файл не найден</string>
+    <string name="not_found_error">Целевой файл не найден или не хватает прав доступа (проверьте настройки приложенния)</string>
     <string name="loading">Загрузка, подождите...</string>
     <string name="file_dont_exist">Файл не существует</string>
     <string name="choose_another_file">Пожалуйста, выберите другой файл</string>

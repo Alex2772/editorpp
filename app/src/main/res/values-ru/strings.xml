@@ -3,7 +3,7 @@
     <string name="app_name">Editor++</string>
     <string name="action_settings">Настройки</string>
     <string name="new_file">Новый файл</string>
-    <string name="file_name">Название файл</string>
+    <string name="file_name">Название файла</string>
     <string name="file_already_exists">Файл уже существует</string>
     <string name="overwrite_file">Вы хотите перезаписать этот файл?</string>
     <string name="overwrite">Перезаписать</string>

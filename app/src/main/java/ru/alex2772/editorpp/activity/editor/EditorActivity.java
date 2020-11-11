@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -128,6 +132,34 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
                 }
             }
+
+            // some devices have soft buttons or custom status bar so we will ask android about
+            // dimensions which are taken by the OS.
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root), new OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                    int x = insets.getSystemWindowInsetRight();
+
+                    // the left side should be padded using tabs view because whe want to keep
+                    // left side with accent background
+                    findViewById(R.id.tabs).setPadding(insets.getSystemWindowInsetLeft(), 0, 0, 0);
+
+                    // but the right side we will pad with tabs wrap because we want to make the right
+                    // padding filled with gray color
+                    findViewById(R.id.tabs_wrap).setPadding(0, 0, insets.getSystemWindowInsetRight(), 0);
+
+
+                    // controls frame contains controls so we should pad it from all sides except
+                    // top because we have a toolbar on top
+                    findViewById(R.id.controlsFrame).setPadding(insets.getSystemWindowInsetLeft(),
+                                                                0,
+                                                                insets.getSystemWindowInsetRight(),
+                                                                insets.getStableInsetBottom());
+
+
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
         }
 
 
@@ -161,6 +193,9 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                                 break;
                             case R.id.save_as:
                                 saveAs();
+                                break;
+                            case R.id.find_replace:
+
                                 break;
                             case R.id.settings:
                                 startActivity(new Intent(EditorActivity.this, SettingsActivity.class));

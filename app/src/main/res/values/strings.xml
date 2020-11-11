@@ -69,4 +69,8 @@
     <string name="try_again">Try again</string>
     <string name="im_sure">I\'m sure</string>
     <string name="check_apps_permissions">Check app\'s permissions</string>
+    <string name="new_">New</string>
+    <string name="open">Open...</string>
+    <string name="save_as">Save as...</string>
+    <string name="find_replace">Find/replace...</string>
 </resources>

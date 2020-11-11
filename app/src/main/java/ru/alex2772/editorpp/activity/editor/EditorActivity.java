@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -155,13 +157,27 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                                                                 0,
                                                                 insets.getSystemWindowInsetRight(),
                                                                 insets.getStableInsetBottom());
+                    // pad left side of editText.
+                    findViewById(R.id.nested).setPadding(insets.getSystemWindowInsetLeft(), 0, 0, 0);
 
-
-                    return insets.consumeSystemWindowInsets();
+                    return insets;
                 }
             });
         }
+        final View root = findViewById(R.id.root);
+        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+            public void onGlobalLayout(){
+                int screenHeight = root.getRootView().getHeight();
+                Rect r = new Rect();
+                View view = getWindow().getDecorView();
+                view.getWindowVisibleDisplayFrame(r);
 
+                int keyBoardHeight = screenHeight - r.bottom;
+                Log.d("++", "keyboard height: " + (keyBoardHeight));
+
+                root.setPadding(0, 0, 0, keyBoardHeight);
+            }
+        });
 
         mThemeManager = new ThemeManager(this);
         mSyntaxManager = new SyntaxManager(this);

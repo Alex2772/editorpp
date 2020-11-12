@@ -1,6 +1,7 @@
 package ru.alex2772.editorpp.activity.editor;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,36 +13,37 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.Visibility;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -84,6 +86,8 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     private ThemeManager mThemeManager;
     private SyntaxManager mSyntaxManager;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +144,6 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root), new OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-                    int x = insets.getSystemWindowInsetRight();
 
                     // the left side should be padded using tabs view because whe want to keep
                     // left side with accent background
@@ -156,9 +159,12 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                     findViewById(R.id.controlsFrame).setPadding(insets.getSystemWindowInsetLeft(),
                                                                 0,
                                                                 insets.getSystemWindowInsetRight(),
-                                                                insets.getStableInsetBottom());
+                                                                0);
                     // pad left side of editText.
                     findViewById(R.id.nested).setPadding(insets.getSystemWindowInsetLeft(), 0, 0, 0);
+
+                    // pad the tool drawer.
+                    findViewById(R.id.tool_drawer).setPadding(0, 0, insets.getSystemWindowInsetRight(), 0);
 
                     return insets;
                 }
@@ -211,7 +217,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                                 saveAs();
                                 break;
                             case R.id.find_replace:
-
+                                mDrawerLayout.openDrawer(GravityCompat.END);
                                 break;
                             case R.id.settings:
                                 startActivity(new Intent(EditorActivity.this, SettingsActivity.class));
@@ -323,10 +329,39 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
         mEdit.requestFocus();
 
-        handleTitlebarAdditionalLabels();
+        onSizeChanged();
+
+
+        mNavigationView = findViewById(R.id.tool_drawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                // we will focus the tool fragment and show keyboard to make UX quicker
+                findViewById(R.id.tool_fragment).requestFocus();
+                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                                InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                // when tool drawer is closed we will want to focus back editor's text field
+                mEdit.requestFocus();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
     }
-
-
 
     public void setCurrentTab(int index) {
         if (mCurrentTab != null) {
@@ -358,13 +393,22 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        handleTitlebarAdditionalLabels();
+        onSizeChanged();
     }
 
-    private void handleTitlebarAdditionalLabels() {
-        int v = getResources().getConfiguration().screenWidthDp > 450 ? View.VISIBLE : View.INVISIBLE;
+    private void onSizeChanged() {
+        int scrWidthDp = getResources().getConfiguration().screenWidthDp;
+
+        Util.setWidth(findViewById(R.id.tool_drawer), (int)TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                Math.min(scrWidthDp, 360.f),
+                getResources().getDisplayMetrics()));
+        int v = scrWidthDp > 450 ? View.VISIBLE : View.INVISIBLE;
         findViewById(R.id.fileName).setVisibility(v);
-        findViewById(R.id.statusBar).setVisibility(v);
+        LinearLayout statusBar = findViewById(R.id.statusBar);
+        for (int i = 0; i < statusBar.getChildCount(); ++i) {
+            statusBar.getChildAt(i).setVisibility(v);
+        }
     }
 
     /**
@@ -708,5 +752,16 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                 findViewById(R.id.btnNL).setVisibility(sharedPreferences.getBoolean(key, true) ? View.VISIBLE : View.GONE);
                 break;
         }
+    }
+
+    /**
+     * Hide or show tool navigation drawer to display find results
+     */
+    public void setToolDrawerScrimTransparency(int transparency) {
+        mDrawerLayout.setScrimColor((67 * transparency / 255) << 24);
+    }
+
+    public NavigationView getNavigationView() {
+        return mNavigationView;
     }
 }

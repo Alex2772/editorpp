@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:context=".FindReplaceFragment"
+    android:padding="0dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/find_card_wrap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0px"
+        app:cardElevation="0px"
+        app:layout_constraintStart_toStartOf="parent">
+    <LinearLayout
+        android:id="@+id/find_card_inner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clipChildren="false"
+        android:orientation="vertical">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="4dp">
+
+                <TextView
+                    android:id="@+id/text_to_find_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Text to find:"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/find_query"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:imeOptions="flagNoExtractUi"
+                    app:layout_constraintEnd_toStartOf="@+id/button_up"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_to_find_label" />
+
+                <Button
+                    android:id="@+id/button_up"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_baseline_arrow_upward_24"
+                    app:layout_constraintEnd_toStartOf="@+id/button_down"
+                    app:layout_constraintTop_toTopOf="@+id/find_query" />
+
+                <Button
+                    android:id="@+id/button_down"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_baseline_arrow_downward_24"
+                    app:layout_constraintEnd_toEndOf="@+id/text_to_find_label"
+                    app:layout_constraintTop_toTopOf="@+id/find_query" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/advanced_options_wrap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0px"
+            android:layout_marginTop="0px"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Replace with:"
+                app:layout_constraintStart_toStartOf="@+id/checkBox3"
+                app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
+
+            <CheckBox
+                android:id="@+id/checkBox4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Match case"
+                app:layout_constraintStart_toEndOf="@+id/checkBox3"
+                app:layout_constraintTop_toTopOf="@+id/checkBox3" />
+
+            <CheckBox
+                android:id="@+id/checkBox3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Wrap around"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView14"
+                app:layout_constraintTop_toBottomOf="@+id/textView14">
+
+                <RadioButton
+                    android:id="@+id/radioButton4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Normal" />
+
+                <RadioButton
+                    android:id="@+id/radioButton5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Regex" />
+
+                <RadioButton
+                    android:id="@+id/radioButton6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Special symbols (\\t, \\n, etc...)" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search mode:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Count"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/replace_query"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:imeOptions="flagNoExtractUi"
+                app:layout_constraintEnd_toStartOf="@+id/button4"
+                app:layout_constraintStart_toStartOf="@+id/textView15"
+                app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Replace one"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/replace_query" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Replace all"
+                app:layout_constraintEnd_toEndOf="@+id/button4"
+                app:layout_constraintStart_toStartOf="@+id/button4"
+                app:layout_constraintTop_toBottomOf="@+id/button4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.core.widget.NestedScrollView>

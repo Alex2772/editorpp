@@ -1,7 +1,6 @@
 package ru.alex2772.editorpp.activity.filebrowser;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +37,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
 
                 @Override
                 public Drawable getIcon() {
-                    return context.getResources().getDrawable(R.drawable.ic_arrow_upward_black_24dp);
+                    return context.getResources().getDrawable(R.drawable.ic_arrow_upward_green_24dp);
                 }
 
                 @Override

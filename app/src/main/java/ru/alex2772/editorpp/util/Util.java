@@ -123,6 +123,12 @@ public class Util {
         v.setLayoutParams(p);
     }
 
+    public static void setWidth(View v, int width) {
+        ViewGroup.LayoutParams p = v.getLayoutParams();
+        p.width = width;
+        v.setLayoutParams(p);
+    }
+
     public static String prettySize(long size) {
         double fsize = size;
         double power = Math.log(fsize) / Math.log(2);

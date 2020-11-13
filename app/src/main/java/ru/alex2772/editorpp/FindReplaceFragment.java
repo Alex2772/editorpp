@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import ru.alex2772.editorpp.activity.editor.EditorActivity;
+import ru.alex2772.editorpp.util.MTP;
 import ru.alex2772.editorpp.util.Util;
 
 public class FindReplaceFragment extends Fragment implements ValueAnimator.AnimatorUpdateListener {
@@ -32,6 +33,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private View mFindCardInner;
     private float mFragmentHeight;
     private View mTextToFindLabel;
+    private EditText mFindQueryEdit;
 
     public FindReplaceFragment() {
     }
@@ -73,8 +75,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         mFindCardInner = mView.findViewById(R.id.find_card_inner);
         mAdvancedOptionsWrap = mView.findViewById(R.id.advanced_options_wrap);
 
-        EditText findQueryEdit = mView.findViewById(R.id.find_query);
-        findQueryEdit.addTextChangedListener(new TextWatcher() {
+        mFindQueryEdit = mView.findViewById(R.id.find_query);
+        mFindQueryEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -85,6 +87,22 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                     hideBackground();
                 else
                     showBackground();
+                final String text = mEditor.getText().toString();
+                final String query = mFindQueryEdit.getText().toString();
+                MTP.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        final int index = text.indexOf(query);
+                        if (index >= 0) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mEditor.getEditor().setSelection(index, index + text.length());
+                                }
+                            });
+                        }
+                    }
+                });
             }
 
             @Override

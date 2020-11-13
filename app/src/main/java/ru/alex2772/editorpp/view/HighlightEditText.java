@@ -9,16 +9,13 @@ import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import ru.alex2772.editorpp.R;
@@ -149,7 +146,7 @@ public class HighlightEditText extends EditText implements SharedPreferences.OnS
             case "highlight_syntax":
             case "theme_id":
                 // invalidate highlight
-                invalidateHighlight();
+                invalidateFullHighlight();
                 break;
             case "horizontal_scroll":
                 updateHorizontalScroll();
@@ -169,7 +166,7 @@ public class HighlightEditText extends EditText implements SharedPreferences.OnS
         setPadding(left, 12, 6, 0);
     }
 
-    public void invalidateHighlight() {
+    public void invalidateFullHighlight() {
         if (mWatcher != null) {
             mWatcher.onTextChanged(getText().toString(), 0, 0, getText().length());
         }

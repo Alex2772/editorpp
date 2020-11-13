@@ -37,6 +37,7 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -68,7 +69,7 @@ import ru.alex2772.editorpp.util.Util;
 import ru.alex2772.editorpp.view.HighlightEditText;
 import ru.alex2772.editorpp.view.Trackpad;
 
-public class EditorActivity extends AppCompatActivity implements HighlightEditText.ISelectionChangedListener, TextWatcher, SharedPreferences.OnSharedPreferenceChangeListener {
+public class EditorActivity extends AppCompatActivity implements HighlightEditText.ISelectionChangedListener, TextWatcher, SharedPreferences.OnSharedPreferenceChangeListener, NestedScrollView.OnScrollChangeListener {
 
     private static int newFileCounter = 1;
 
@@ -88,6 +89,13 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     private SyntaxManager mSyntaxManager;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
+    private NestedScrollView mNested;
+
+    private int mLastHighlightY = 0;
+    private int mLastHighlightBegin = 0;
+    private int mLastHighlightEnd = 0;
+
+    private static final int HIGHLIGHT_BIAS_OFFSET = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +243,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             mCurrentTab.setSyntax(index);
-                            mEdit.invalidateHighlight();
+                            mEdit.invalidateFullHighlight();
                             DBHelper.updateFile(EditorActivity.this, mCurrentTab);
                             return true;
                         }
@@ -249,7 +257,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
         mDisplayRow = findViewById(R.id.displayRow);
         mDisplayCol = findViewById(R.id.displayCol);
 
-        //NestedScrollView nested = findViewById(R.id.nested);
+        mNested = findViewById(R.id.nested);
 
         mEdit = findViewById(R.id.editText);
         mEdit.setSelectionChangedListener(this);
@@ -270,6 +278,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
         ((Trackpad) findViewById(R.id.trackpad)).setEditText(mEdit);
         mEdit.addTextChangedListener(this);
+        mNested.setOnScrollChangeListener(this);
 
         mSaveButton = findViewById(R.id.save);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -361,6 +370,12 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             }
         });
 
+    }
+    public Editable getText() {
+        return mEdit.getText();
+    }
+    public HighlightEditText getEditor() {
+        return mEdit;
     }
 
     public void setCurrentTab(int index) {
@@ -537,7 +552,7 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                             DBHelper.getFileData(EditorActivity.this, m, new Runnable() {
                                 @Override
                                 public void run() {
-                                    mEdit.invalidateHighlight();
+                                    mEdit.invalidateFullHighlight();
                                 }
                             });
                             DBHelper.updateFile(EditorActivity.this, m);
@@ -654,20 +669,41 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (mLastHighlightBegin >= start) {
+            if (mLastHighlightBegin > start) {
+                mLastHighlightBegin += count - before;
+            }
+        } else {
+            mLastHighlightBegin += count - before;
+            mLastHighlightEnd += count - before;
+        }
+
+        doTextChangedHighlight(start, start + Math.max(count, before));
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        setSavedState(SaveState.UNSAVED);
+    }
+
+    private void doTextChangedHighlight(int textStart, int textEnd) {
+        if (textEnd - textStart > 100) {
+            // too big update; highlight syntax using scroll highlighting logic
+            mLastHighlightEnd = mLastHighlightBegin = 0;
+            doScrollHighlight();
+        }
         try {
             {
-                int lineBegin = start;
-                //noinspection StatementWithEmptyBody
-                for (; lineBegin > 0 && s.charAt(lineBegin - 1) != '\n'; --lineBegin) ;
+                // seek for line start
+                for (; textStart > 0 && mEdit.getText().charAt(textStart) != '\n'; --textStart);
 
-                int lineEnd = start + count - 1;
-                //noinspection StatementWithEmptyBody
-                for (; lineEnd < s.length() && s.charAt(lineEnd) != '\n'; ++lineEnd) ;
-                lineEnd -= 1;
+                // seek for line end
+                for (; textEnd < mEdit.getText().length() && mEdit.getText().charAt(textEnd) != '\n'; ++textEnd);
 
+                // highlight whole line!
                 SyntaxHighlighter.highlight(this, mThemeManager.getTheme(),
                         mSyntaxManager.getSyntaxes().get(mCurrentTab.getSyntax()), mEdit.getText(),
-                        lineBegin, lineEnd);
+                        textStart, textEnd);
             }
         } catch (Exception ignored) {
             /*
@@ -676,10 +712,35 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
              */
         }
     }
+    private void doScrollHighlight() {
+        try {
+            {
+                mLastHighlightY =  mNested.getScrollY();
+                int bias = HIGHLIGHT_BIAS_OFFSET;
+                int y = Math.max(mLastHighlightY - bias / 2, 0);
+                int height = mNested.getHeight() + bias;
+                int begin = mEdit.getLayout().getLineStart(y / mEdit.getLineHeight());
+                int end = mEdit.getLayout().getLineEnd((y + height) / mEdit.getLineHeight());
 
-    @Override
-    public void afterTextChanged(Editable s) {
-        setSavedState(SaveState.UNSAVED);
+                if (begin < mLastHighlightBegin) {
+                    SyntaxHighlighter.highlight(this, mThemeManager.getTheme(),
+                            mSyntaxManager.getSyntaxes().get(mCurrentTab.getSyntax()), mEdit.getText(),
+                            begin, mLastHighlightBegin);
+                    mLastHighlightBegin = begin;
+                }
+                if (end > mLastHighlightEnd) {
+                    SyntaxHighlighter.highlight(this, mThemeManager.getTheme(),
+                            mSyntaxManager.getSyntaxes().get(mCurrentTab.getSyntax()), mEdit.getText(),
+                            mLastHighlightEnd, end);
+                    mLastHighlightEnd = end;
+                }
+            }
+        } catch (Exception ignored) {
+            /*
+             * I love java for it's internal checks. You do not need check it by yourself. You just
+             * have to catch exception and say 'Okay. No harm in trying.'
+             */
+        }
     }
 
     public boolean closeFile() {
@@ -763,5 +824,17 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     public NavigationView getNavigationView() {
         return mNavigationView;
+    }
+
+    @Override
+    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        if (Math.abs(scrollY - mLastHighlightY) > HIGHLIGHT_BIAS_OFFSET) {
+            doScrollHighlight();
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

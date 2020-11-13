@@ -1,4 +1,4 @@
-package ru.alex2772.editorpp;
+package ru.alex2772.editorpp.activity.editor.tools.findreplace;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,6 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import ru.alex2772.editorpp.R;
 import ru.alex2772.editorpp.activity.editor.EditorActivity;
 import ru.alex2772.editorpp.activity.editor.IEditorFragment;
 import ru.alex2772.editorpp.util.MTP;
@@ -33,8 +35,9 @@ import ru.alex2772.editorpp.util.Util;
 
 public class FindReplaceFragment extends Fragment implements ValueAnimator.AnimatorUpdateListener, TextWatcher, IEditorFragment {
 
+
     private EditorActivity mEditor;
-    private View mView;
+    private CustomNestedScrollView mView;
     private boolean mHidden = false;
     private View mAdvancedOptionsWrap;
     private View mFindCardWrap;
@@ -82,7 +85,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         if (mHidden)
             return;
         mHidden = true;
-        mFragmentHeight = mEditor.getNavigationView().getMeasuredHeightAndState();
+        mAdvancedOptionsWrap.measure(0, 0);
+        mFragmentHeight = mAdvancedOptionsWrap.getMeasuredHeightAndState();
 
         ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
         anim.addUpdateListener(this);
@@ -90,11 +94,12 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     }
 
 
-    private void showBackground() {
+    void showBackground() {
         if (!mHidden)
             return;
         mHidden = false;
-        mFragmentHeight = mEditor.getNavigationView().getMeasuredHeightAndState();
+        mAdvancedOptionsWrap.measure(0, 0);
+        mFragmentHeight = mAdvancedOptionsWrap.getMeasuredHeightAndState();
 
         ValueAnimator anim = ValueAnimator.ofFloat(1, 0);
         anim.addUpdateListener(this);
@@ -232,7 +237,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mEditor = (EditorActivity)getActivity();
-        mView = inflater.inflate(R.layout.fragment_find_replace, container, false);
+        mView = (CustomNestedScrollView) inflater.inflate(R.layout.fragment_find_replace, container, false);
+        mView.setFragment(this);
 
         mTextToFindLabel = mView.findViewById(R.id.text_to_find_label);
         mFindCardWrap = mView.findViewById(R.id.find_card_wrap);
@@ -303,6 +309,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         mEditor.getEditor().removeTextChangedListener(this);
     }
 
+
     private void updateSearchOccurrences(final boolean select) {
         final String text = mEditor.getText().toString();
         final String query = mFindQueryEdit.getText().toString();
@@ -328,11 +335,13 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                for (int indexCopy : mFindEntries) {
-                                    mEditor.getText().setSpan(new FindHighlightSpan(),
-                                                              indexCopy,
-                                                              indexCopy + query.length(),
-                                                              SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                synchronized (mFindEntries) {
+                                    for (int indexCopy : mFindEntries) {
+                                        mEditor.getText().setSpan(new FindHighlightSpan(),
+                                                indexCopy,
+                                                indexCopy + query.length(),
+                                                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    }
                                 }
                                 goToOccurrence(Direction.DOWN);
                             }

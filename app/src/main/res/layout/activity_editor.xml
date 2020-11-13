@@ -250,7 +250,7 @@
 
             <fragment
                 android:id="@+id/tool_fragment"
-                android:name="ru.alex2772.editorpp.FindReplaceFragment"
+                android:name="ru.alex2772.editorpp.activity.editor.tools.findreplace.FindReplaceFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#8ECA34</color>
     <color name="colorPrimaryDark">#6BA811</color>
+    <color name="colorPrimaryDarkFind">#446BA811</color>
     <color name="colorAccent">#ff6932a1</color>
     <color name="blackTransparent">#90000000</color>
     <color name="colorJoystickDots">#aaa</color>

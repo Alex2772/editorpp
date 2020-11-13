@@ -16,6 +16,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -369,7 +370,6 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
             }
         });
-
     }
     public Editable getText() {
         return mEdit.getText();
@@ -836,5 +836,11 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    public void ensureEditorFocus() {
+        if (!mEdit.isFocused()) {
+            mEdit.requestFocus();
+        }
     }
 }

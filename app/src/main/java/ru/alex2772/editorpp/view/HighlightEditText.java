@@ -129,7 +129,8 @@ public class HighlightEditText extends EditText implements SharedPreferences.OnS
     @Override
     public void addTextChangedListener(TextWatcher watcher) {
         super.addTextChangedListener(watcher);
-        mWatcher = watcher;
+        if (mWatcher == null)
+            mWatcher = watcher;
     }
 
     @Override

@@ -86,7 +86,7 @@ public abstract class FileBrowserActivity extends AppCompatActivity implements F
                 }
             }
         }
-        initialOpen(Environment.getDataDirectory());
+        initialOpen(Environment.getExternalStorageDirectory());
     }
 
     private void initialOpen(File directory) {

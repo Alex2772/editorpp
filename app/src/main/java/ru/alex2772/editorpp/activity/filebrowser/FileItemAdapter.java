@@ -47,6 +47,10 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.FileIt
             });
         }
         File[] files = currentDir.listFiles();
+        if (files == null && currentDir.getAbsolutePath().equals("/storage/emulated")) {
+            // a workaround for (new File("/storage/emulated").listFiles()) == null
+            files = new File[]{new File("/storage/emulated/0")};
+        }
         if (files != null) {
             List<File> l = Arrays.asList(files);
             Collections.sort(l, new Comparator<File>() {

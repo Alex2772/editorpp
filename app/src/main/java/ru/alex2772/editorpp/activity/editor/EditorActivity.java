@@ -40,6 +40,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -357,12 +358,21 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
 
+                Fragment f = getSupportFragmentManager().findFragmentById(R.id.tool_fragment);
+                if (f instanceof IEditorFragment) {
+                    ((IEditorFragment) f).onDrawerOpened();
+                }
             }
 
             @Override
             public void onDrawerClosed(@NonNull View drawerView) {
                 // when tool drawer is closed we will want to focus back editor's text field
                 mEdit.requestFocus();
+
+                Fragment f = getSupportFragmentManager().findFragmentById(R.id.tool_fragment);
+                if (f instanceof IEditorFragment) {
+                    ((IEditorFragment) f).onDrawerClosed();
+                }
             }
 
             @Override
@@ -842,5 +852,9 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
         if (!mEdit.isFocused()) {
             mEdit.requestFocus();
         }
+    }
+
+    public void scrollToCursor() {
+        mNested.smoothScrollTo(0, mEdit.getLayout().getLineForOffset(mEdit.getSelectionStart()) * mEdit.getLineHeight());
     }
 }

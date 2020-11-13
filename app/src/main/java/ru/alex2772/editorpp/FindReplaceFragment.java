@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import ru.alex2772.editorpp.activity.editor.EditorActivity;
+import ru.alex2772.editorpp.activity.editor.IEditorFragment;
 import ru.alex2772.editorpp.util.MTP;
 import ru.alex2772.editorpp.util.Util;
 
-public class FindReplaceFragment extends Fragment implements ValueAnimator.AnimatorUpdateListener, TextWatcher {
+public class FindReplaceFragment extends Fragment implements ValueAnimator.AnimatorUpdateListener, TextWatcher, IEditorFragment {
 
     private EditorActivity mEditor;
     private View mView;
@@ -60,6 +61,16 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     @Override
     public void afterTextChanged(Editable editable) {
 
+    }
+
+    @Override
+    public void onDrawerOpened() {
+
+    }
+
+    @Override
+    public void onDrawerClosed() {
+        clearAllSpans();
     }
 
     private enum Direction {
@@ -155,8 +166,62 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             if (nearestPos == -1) {
                 return false;
             }
+
             mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
             mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            mEditor.scrollToCursor();
+
+            return true;
+        }
+    }
+    private boolean goToOccurrence(Direction direction) {
+        for (FindSpan s : mEditor.getText().getSpans(0, mEditor.getEditor().getEditableText().length(), FindBorderHighlightSpan.class)) {
+            mEditor.getText().removeSpan(s);
+        }
+        int start = mEditor.getEditor().getSelectionStart();
+
+
+        synchronized (mFindEntries) {
+            if (mFindEntries.isEmpty())
+                return false;
+
+            int nearestPos = -1;
+
+            switch (direction) {
+                case DOWN:
+                    for (int i : mFindEntries) {
+                        int delta = i - start;
+                        if (delta >= 0) {
+                            if (nearestPos == -1) {
+                                nearestPos = i;
+                            } else if ((nearestPos - start) > delta) {
+                                nearestPos = i;
+                            }
+                        }
+                    }
+                    break;
+
+                case UP:
+                    for (int i : mFindEntries) {
+                        int delta = start - i;
+                        if (delta >= 0) {
+                            if (nearestPos == -1) {
+                                nearestPos = i;
+                            } else if ((start - nearestPos) > delta) {
+                                nearestPos = i;
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (nearestPos == -1) {
+                return false;
+            }
+
+            mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
+            mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            mEditor.scrollToCursor();
+
             return true;
         }
     }
@@ -208,6 +273,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         mView.findViewById(R.id.button_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideBackground();
                 nextOccurrence(Direction.DOWN);
                 mEditor.getEditor().requestFocus();
             }
@@ -215,6 +281,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         mView.findViewById(R.id.button_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideBackground();
                 nextOccurrence(Direction.UP);
                 mEditor.getEditor().requestFocus();
             }
@@ -267,7 +334,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                                               indexCopy + query.length(),
                                                               SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 }
-                                nextOccurrence(Direction.DOWN);
+                                goToOccurrence(Direction.DOWN);
                             }
                         });
                     }

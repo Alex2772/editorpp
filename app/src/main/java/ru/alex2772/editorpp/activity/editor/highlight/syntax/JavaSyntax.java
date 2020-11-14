@@ -10,6 +10,7 @@ public class JavaSyntax extends CBasedSyntax {
                 "boolean",
                 "break",
                 "byte",
+                "try",
                 "catch",
                 "class",
                 "enum",

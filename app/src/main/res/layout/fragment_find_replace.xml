@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:text="Search mode:"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/error_display" />
 
             <Button
                 android:id="@+id/button_count"
@@ -168,6 +168,19 @@
                 app:layout_constraintEnd_toEndOf="@+id/button4"
                 app:layout_constraintStart_toStartOf="@+id/button4"
                 app:layout_constraintTop_toBottomOf="@+id/button4" />
+
+            <TextView
+                android:id="@+id/error_display"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="TextView"
+                android:textColor="#C30000"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@+id/button_count"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

@@ -24,8 +24,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -60,6 +62,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private View mButtonFindUp;
     private View mButtonFindDown;
     private final ArrayList<Integer> mFindEntries = new ArrayList<>();
+    private TextView mErrorDisplay;
 
     public FindReplaceFragment() {
     }
@@ -380,6 +383,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                 showOccurrencesCount();
             }
         });
+        mErrorDisplay = mView.findViewById(R.id.error_display);
 
         return mView;
     }
@@ -469,8 +473,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                clearAllSpans();
-                                                Toast.makeText(getContext(), getResources().getString(R.string.invalid_escaped_string_invalid_char, currentChar), Toast.LENGTH_SHORT).show();
+                                                setErrorString(getResources().getString(R.string.invalid_escaped_string_invalid_char, currentChar));
                                             }
                                         });
                                         return;
@@ -485,8 +488,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    clearAllSpans();
-                                    Toast.makeText(getContext(), R.string.invalid_escaped_string_last_slash, Toast.LENGTH_SHORT).show();
+                                    setErrorString(R.string.invalid_escaped_string_last_slash);
                                 }
                             });
                             return;
@@ -516,6 +518,13 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                                 indexCopy + query.length(),
                                                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
+                                    if (mFindEntries.isEmpty()) {
+                                        setErrorString(getResources().getQuantityString(R.plurals.occurrence_count, 0, 0));
+                                        return;
+                                    } else {
+                                        setErrorString(null
+                                        );
+                                    }
                                 }
                                 goToOccurrence(Direction.DOWN);
                             }
@@ -525,6 +534,22 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             }
 
         });
+    }
+
+    private void setErrorString(@StringRes int errorString) {
+        setErrorString(getContext().getString(errorString));
+    }
+
+    private void setErrorString(@Nullable String errorString) {
+        if (errorString == null) {
+            hideBackground();
+            mErrorDisplay.setVisibility(View.GONE);
+            return;
+        }
+        clearAllSpans();
+        showBackground();
+        mErrorDisplay.setText(errorString);
+        mErrorDisplay.setVisibility(View.VISIBLE);
     }
 
     private void showOccurrencesCount() {

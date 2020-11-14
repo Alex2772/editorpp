@@ -73,4 +73,9 @@
     <string name="open">Open...</string>
     <string name="save_as">Save as...</string>
     <string name="find_replace">Find/replace...</string>
+    <string name="search_wrapped">Search wrapped</string>
+    <plurals name="occurrence_count">
+        <item quantity="zero">No occurrences</item>
+        <item quantity="other">%d occurrences</item>
+    </plurals>
 </resources>

@@ -79,19 +79,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Replace with:"
-                app:layout_constraintStart_toStartOf="@+id/checkBox3"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
+                app:layout_constraintStart_toStartOf="@+id/wrap_checkbox"
+                app:layout_constraintTop_toBottomOf="@+id/wrap_checkbox" />
 
             <CheckBox
                 android:id="@+id/checkBox4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Match case"
-                app:layout_constraintStart_toEndOf="@+id/checkBox3"
-                app:layout_constraintTop_toTopOf="@+id/checkBox3" />
+                app:layout_constraintStart_toEndOf="@+id/wrap_checkbox"
+                app:layout_constraintTop_toTopOf="@+id/wrap_checkbox" />
 
             <CheckBox
-                android:id="@+id/checkBox3"
+                android:id="@+id/wrap_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
@@ -136,7 +136,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/button_count"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="Count"

@@ -1,7 +1,6 @@
 package ru.alex2772.editorpp.activity.editor.tools.findreplace;
 
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,14 +9,16 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.UnderlineSpan;
-import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -25,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import ru.alex2772.editorpp.R;
 import ru.alex2772.editorpp.activity.editor.EditorActivity;
@@ -45,6 +45,9 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private float mFragmentHeight;
     private View mTextToFindLabel;
     private EditText mFindQueryEdit;
+    private CheckBox mWrapCheckbox;
+    private View mButtonFindUp;
+    private View mButtonFindDown;
     private final ArrayList<Integer> mFindEntries = new ArrayList<>();
 
     public FindReplaceFragment() {
@@ -132,12 +135,22 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         for (FindSpan s : mEditor.getText().getSpans(0, mEditor.getEditor().getEditableText().length(), FindBorderHighlightSpan.class)) {
             mEditor.getText().removeSpan(s);
         }
+
+        int nearestPos = findNearestOccurrence(direction);
+
+        if (nearestPos == -1)
+            return false;
+
+        mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
+        mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        mEditor.scrollToCursor();
+        return true;
+    }
+    private int findNearestOccurrence(Direction direction) {
         int start = mEditor.getEditor().getSelectionStart();
-
-
         synchronized (mFindEntries) {
             if (mFindEntries.isEmpty())
-                return false;
+                return -1;
 
             int nearestPos = -1;
 
@@ -168,15 +181,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                     }
                     break;
             }
-            if (nearestPos == -1) {
-                return false;
-            }
 
-            mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
-            mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            mEditor.scrollToCursor();
-
-            return true;
+            return nearestPos;
         }
     }
     private boolean goToOccurrence(Direction direction) {
@@ -276,24 +282,66 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             }
         });
 
-        mView.findViewById(R.id.button_down).setOnClickListener(new View.OnClickListener() {
+        mButtonFindDown = mView.findViewById(R.id.button_down);
+        mButtonFindDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideBackground();
-                nextOccurrence(Direction.DOWN);
-                mEditor.getEditor().requestFocus();
+                if (nextOccurrence(Direction.DOWN)) {
+                    mEditor.getEditor().requestFocus();
+                    updateSearchButtonsDisability();
+                } else if (mWrapCheckbox.isChecked()) {
+                    mEditor.getEditor().setSelection(0);
+                    nextOccurrence(Direction.DOWN);
+
+                    Toast.makeText(getContext(), R.string.search_wrapped, Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        mView.findViewById(R.id.button_up).setOnClickListener(new View.OnClickListener() {
+
+        mButtonFindUp = mView.findViewById(R.id.button_up);
+        mButtonFindUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideBackground();
-                nextOccurrence(Direction.UP);
-                mEditor.getEditor().requestFocus();
+                if (nextOccurrence(Direction.UP)) {
+                    mEditor.getEditor().requestFocus();
+                    updateSearchButtonsDisability();
+                } else if (mWrapCheckbox.isChecked()) {
+                    mEditor.getEditor().setSelection(mEditor.getText().length());
+                    nextOccurrence(Direction.UP);
+
+                    Toast.makeText(getContext(), R.string.search_wrapped, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mWrapCheckbox = mView.findViewById(R.id.wrap_checkbox);
+        mWrapCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                updateSearchButtonsDisability();
+            }
+        });
+
+        mView.findViewById(R.id.button_count).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showOccurrencesCount();
             }
         });
 
         return mView;
+    }
+
+    private void updateSearchButtonsDisability() {
+        if (mWrapCheckbox.isChecked()) {
+            mButtonFindUp.setEnabled(true);
+            mButtonFindDown.setEnabled(true);
+        } else {
+            mButtonFindDown.setEnabled(findNearestOccurrence(Direction.DOWN) != -1);
+            mButtonFindUp.setEnabled(findNearestOccurrence(Direction.UP) != -1);
+        }
     }
 
     @Override
@@ -344,14 +392,20 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                     }
                                 }
                                 goToOccurrence(Direction.DOWN);
+                                showOccurrencesCount();
                             }
                         });
                     }
                 }
             }
+
         });
     }
 
+    private void showOccurrencesCount() {
+        String s = getResources().getQuantityString(R.plurals.occurrence_count, mFindEntries.size(), mFindEntries.size());
+        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onAnimationUpdate(ValueAnimator valueAnimator) {

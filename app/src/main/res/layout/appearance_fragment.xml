@@ -32,7 +32,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/cardview_top_padding"
                         android:gravity="bottom"
-                        android:text="Font"
+                        android:text="@string/font"
                         android:textAllCaps="true"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginLeft="4dp"
-                        android:text="Family"
+                        android:text="@string/family"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -55,7 +55,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginLeft="4dp"
-                        android:text="Size"
+                        android:text="@string/size"
                         app:layout_constraintStart_toStartOf="@id/spinner3"
                         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -137,7 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/cardview_top_padding"
                         android:gravity="bottom"
-                        android:text="Example"
+                        android:text="@string/example"
                         android:textAllCaps="true"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"

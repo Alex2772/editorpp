@@ -33,7 +33,7 @@
                     android:id="@+id/text_to_find_label"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Text to find:"
+                    android:text="@string/text_to_find"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -73,6 +73,7 @@
             android:layout_marginTop="0px"
             android:padding="4dp">
 
+            <!--
             <TextView
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
@@ -82,67 +83,6 @@
                 app:layout_constraintStart_toStartOf="@+id/checkbox_wrap"
                 app:layout_constraintTop_toBottomOf="@+id/checkbox_wrap" />
 
-            <CheckBox
-                android:id="@+id/checkbox_match_case"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Match case"
-                app:layout_constraintStart_toEndOf="@+id/checkbox_wrap"
-                app:layout_constraintTop_toTopOf="@+id/checkbox_wrap" />
-
-            <CheckBox
-                android:id="@+id/checkbox_wrap"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Wrap around"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_mode_radio_group" />
-
-            <RadioGroup
-                android:id="@+id/search_mode_radio_group"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView14"
-                app:layout_constraintTop_toBottomOf="@+id/textView14">
-
-                <RadioButton
-                    android:id="@+id/normal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Normal" />
-
-                <RadioButton
-                    android:id="@+id/regex"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Regex" />
-
-                <RadioButton
-                    android:id="@+id/special_symbols"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Special symbols (\\t, \\n, etc...)" />
-            </RadioGroup>
-
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Search mode:"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/error_display" />
-
-            <Button
-                android:id="@+id/button_count"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="Count"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <EditText
                 android:id="@+id/replace_query"
                 android:layout_width="0dp"
@@ -151,6 +91,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/button4"
                 app:layout_constraintStart_toStartOf="@+id/textView15"
                 app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
 
             <Button
                 android:id="@+id/button4"
@@ -168,6 +109,68 @@
                 app:layout_constraintEnd_toEndOf="@+id/button4"
                 app:layout_constraintStart_toStartOf="@+id/button4"
                 app:layout_constraintTop_toBottomOf="@+id/button4" />
+            -->
+            <CheckBox
+                android:id="@+id/checkbox_match_case"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/match_case"
+                app:layout_constraintStart_toEndOf="@+id/checkbox_wrap"
+                app:layout_constraintTop_toTopOf="@+id/checkbox_wrap" />
+
+            <CheckBox
+                android:id="@+id/checkbox_wrap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/wrap_around"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/search_mode_radio_group" />
+
+            <RadioGroup
+                android:id="@+id/search_mode_radio_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView14"
+                app:layout_constraintTop_toBottomOf="@+id/textView14">
+
+                <RadioButton
+                    android:id="@+id/normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/normal" />
+
+                <RadioButton
+                    android:id="@+id/regex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/regex" />
+
+                <RadioButton
+                    android:id="@+id/special_symbols"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/special_symbols" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_mode"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/error_display" />
+
+            <Button
+                android:id="@+id/button_count"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/count"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <TextView
                 android:id="@+id/error_display"

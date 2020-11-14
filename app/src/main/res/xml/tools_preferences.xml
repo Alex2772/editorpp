@@ -21,22 +21,22 @@
     <CheckBoxPreference
         android:key="bp_tab"
         app:defaultValue="true"
-        android:title="Tab button (TAB)"
-        android:summary="Insert four spaces or tab" />
+        android:title="@string/tab_button"
+        android:summary="@string/inserts_indentation" />
     <CheckBoxPreference
         android:key="bp_end"
         app:defaultValue="true"
-        android:title="End button (END)"
-        android:summary="Move cursor to the end of line" />
+        android:title="@string/end_button"
+        android:summary="@string/moves_cursor_end" />
     <CheckBoxPreference
         android:key="bp_trackpad"
         app:defaultValue="true"
-        android:title="Trackpad"
-        android:summary="Trackpad-like cursor position controller" />
+        android:title="@string/trackpad"
+        android:summary="@string/trackpad_like_controller" />
     <CheckBoxPreference
         android:key="bp_nl"
         app:defaultValue="true"
-        android:title="New line (NL)"
-        android:summary="Leave the current line and make next new blank line. Independent of cursor's horizontal position" />
+        android:title="@string/new_line"
+        android:summary="@string/leaves_current_line_makes_blank_line" />
 </PreferenceCategory>
 </PreferenceScreen>

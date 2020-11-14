@@ -20,48 +20,48 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="horizontal_scroll"
-            android:summaryOff="Editor does word wrapping"
-            android:summaryOn="Editor allows move left and right"
-            android:title="Horizontal scrolling" />
+            android:summaryOff="@string/editor_does_word_wrapping"
+            android:summaryOn="@string/editor_allows_move_left_right"
+            android:title="@string/horizontal_scrolling" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="show_line_numbers"
-            android:summaryOff="Editor doesn't show line numbers"
-            android:summaryOn="Editor shows line numbers"
-            android:title="Line numbers" />
+            android:summaryOff="@string/editor_doesnt_show_line_numbers"
+            android:summaryOn="@string/editor_shows_line_numbers"
+            android:title="@string/line_numbers" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="ignore_file_size"
-            android:summaryOff="Editor will not open files bigger than 4 KB"
-            android:summaryOn="Editor will always open big files"
-            android:title="Ignore file size" />
+            android:summaryOff="@string/editor_will_not_open_files_4kb"
+            android:summaryOn="@string/editor_will_always_open_big_files"
+            android:title="@string/ignore_file_size" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Highlight">
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="highlight_syntax"
-            android:summary="Visually separate code constructions according to syntax rules of current language"
-            android:title="Syntax" />
+            android:summary="@string/visually_separate_code_constructions"
+            android:title="@string/syntax" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="highlight_brackets"
-            android:summary="Define bracket's pair which cursor stays on"
-            android:title="Brackets" />
+            android:summary="@string/define_brackets_pair"
+            android:title="@string/brackets" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Autocompletion">
+    <PreferenceCategory android:title="@string/autocompletion">
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="ac_bracket_pair"
-            android:summary="Append opened bracket with closing bracket"
-            android:title="Bracket's pair" />
+            android:summary="@string/append_opened_bracket"
+            android:title="@string/brackets_pair" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="ac_tabulation"
-            android:summary="Indent code blocks to make it more readable"
-            android:title="Tabulation" />
+            android:summary="@string/indent_code_blocks"
+            android:title="@string/tabulation" />
         <ListPreference
             android:defaultValue="whitespaces"
             android:dependency="ac_tabulation"
@@ -69,6 +69,6 @@
             android:entryValues="@array/ac_tabulation_symbol"
             android:key="ac_tabulation_symbol"
             android:summary="%s"
-            android:title="Tabulation symbol" />
+            android:title="@string/tabulation_symbol" />
     </PreferenceCategory>
 </PreferenceScreen>

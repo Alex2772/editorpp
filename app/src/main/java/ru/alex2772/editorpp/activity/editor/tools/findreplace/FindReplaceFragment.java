@@ -1,6 +1,8 @@
 package ru.alex2772.editorpp.activity.editor.tools.findreplace;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.app.assist.AssistStructure;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,15 +11,19 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.util.JsonReader;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
@@ -25,6 +31,8 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 import ru.alex2772.editorpp.R;
@@ -47,6 +55,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private EditText mFindQueryEdit;
     private CheckBox mWrapCheckbox;
     private CheckBox mMatchCaseCheckbox;
+    private RadioButton mSpecialSymbolsRadio;
+    private RadioButton mRagioRadio;
     private View mButtonFindUp;
     private View mButtonFindDown;
     private final ArrayList<Integer> mFindEntries = new ArrayList<>();
@@ -89,6 +99,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         if (mHidden)
             return;
         mHidden = true;
+        mEditor.hideTopPanel();
         mAdvancedOptionsWrap.measure(0, 0);
         mFragmentHeight = mAdvancedOptionsWrap.getMeasuredHeightAndState();
 
@@ -101,6 +112,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     void showBackground() {
         if (!mHidden)
             return;
+
         mHidden = false;
         mAdvancedOptionsWrap.measure(0, 0);
         mFragmentHeight = mAdvancedOptionsWrap.getMeasuredHeightAndState();
@@ -288,6 +300,15 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             @Override
             public void onClick(View view) {
                 hideBackground();
+                if (mFindEntries.isEmpty()) {
+                    Toast.makeText(getContext(),
+                                   getResources().getQuantityString(R.plurals.occurrence_count, 0, 0),
+                                   Toast.LENGTH_SHORT).show();
+                    updateSearchButtonsDisability();
+                    clearAllSpans();
+                    mEditor.getEditor().setSelection(mEditor.getEditor().getSelectionStart());
+                    return;
+                }
                 if (nextOccurrence(Direction.DOWN)) {
                     mEditor.getEditor().requestFocus();
                     updateSearchButtonsDisability();
@@ -305,6 +326,15 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             @Override
             public void onClick(View view) {
                 hideBackground();
+                if (mFindEntries.isEmpty()) {
+                    Toast.makeText(getContext(),
+                            getResources().getQuantityString(R.plurals.occurrence_count, 0, 0),
+                            Toast.LENGTH_SHORT).show();
+                    updateSearchButtonsDisability();
+                    clearAllSpans();
+                    mEditor.getEditor().setSelection(mEditor.getEditor().getSelectionStart());
+                    return;
+                }
                 if (nextOccurrence(Direction.UP)) {
                     mEditor.getEditor().requestFocus();
                     updateSearchButtonsDisability();
@@ -330,9 +360,19 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 updateSearchOccurrences(true);
-                hideBackground();
             }
         });
+
+        RadioGroup searchModeRagioGroup = mView.findViewById(R.id.search_mode_radio_group);
+        searchModeRagioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                updateSearchOccurrences(true);
+            }
+        });
+        mSpecialSymbolsRadio = mView.findViewById(R.id.special_symbols);
+        mRagioRadio = mView.findViewById(R.id.regex);
+
 
         mView.findViewById(R.id.button_count).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -375,6 +415,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             return;
 
         final boolean matchCase = mMatchCaseCheckbox.isChecked();
+        final boolean isSpecialSymbols = mSpecialSymbolsRadio.isChecked();
+        final boolean isRegex = mRagioRadio.isChecked();
 
         MTP.schedule(new Runnable() {
             @Override
@@ -387,6 +429,71 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                         t = t.toLowerCase();
                         q = q.toLowerCase();
                     }
+
+                    if (isSpecialSymbols) {
+                        boolean escapeNext = false;
+                        StringBuilder newString = new StringBuilder();
+
+                        for (int i = 0; i < q.length(); ++i) {
+                            final char currentChar = q.charAt(i);
+                            if (escapeNext) {
+                                escapeNext = false;
+                                switch (q.charAt(i)) {
+                                    case '\\':  newString.append('\\');
+                                        break; /* switch */
+
+                                    case 'r':  newString.append('\r');
+                                        break; /* switch */
+
+                                    case 'n':  newString.append('\n');
+                                        break; /* switch */
+
+                                    case 'f':  newString.append('\f');
+                                        break; /* switch */
+
+                                    /* PASS a \b THROUGH!! */
+                                    case 'b':  newString.append("\\b");
+                                        break; /* switch */
+
+                                    case 't':  newString.append('\t');
+                                        break; /* switch */
+
+                                    case 'a':  newString.append('\007');
+                                        break; /* switch */
+
+                                    case 'e':  newString.append('\033');
+                                        break; /* switch */
+                                    default:
+                                        newString.append("\\").append(currentChar);
+
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                clearAllSpans();
+                                                Toast.makeText(getContext(), getResources().getString(R.string.invalid_escaped_string_invalid_char, currentChar), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                        return;
+                                }
+                            } else if (currentChar == '\\') {
+                                escapeNext = true;
+                            } else {
+                                newString.append(currentChar);
+                            }
+                        }
+                        if (escapeNext) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    clearAllSpans();
+                                    Toast.makeText(getContext(), R.string.invalid_escaped_string_last_slash, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return;
+                        }
+                        q = newString.toString();
+                    }
+
                     int index = 0;
 
                     for (; ; ) {

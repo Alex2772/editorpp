@@ -97,10 +97,10 @@
                 android:checked="true"
                 android:text="Wrap around"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+                app:layout_constraintTop_toBottomOf="@+id/search_mode_radio_group" />
 
             <RadioGroup
-                android:id="@+id/radioGroup2"
+                android:id="@+id/search_mode_radio_group"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,20 +108,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView14">
 
                 <RadioButton
-                    android:id="@+id/radioButton4"
+                    android:id="@+id/normal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="Normal" />
 
                 <RadioButton
-                    android:id="@+id/radioButton5"
+                    android:id="@+id/regex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Regex" />
 
                 <RadioButton
-                    android:id="@+id/radioButton6"
+                    android:id="@+id/special_symbols"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Special symbols (\\t, \\n, etc...)" />

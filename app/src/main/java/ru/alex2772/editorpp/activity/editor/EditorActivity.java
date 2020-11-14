@@ -45,6 +45,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 
@@ -856,5 +857,10 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
 
     public void scrollToCursor() {
         mNested.smoothScrollTo(0, mEdit.getLayout().getLineForOffset(mEdit.getSelectionStart()) * mEdit.getLineHeight());
+    }
+
+    public void hideTopPanel() {
+        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+        appBarLayout.setExpanded(false, true);
     }
 }

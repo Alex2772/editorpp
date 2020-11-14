@@ -28,7 +28,7 @@ public class SyntaxHighlighter {
                 @Override
                 public void run() {
                     try {
-                        CharSequence sub = text.subSequence(lineBegin, lineEnd + 1);
+                        CharSequence sub = text.subSequence(lineBegin, lineEnd);
                         final LinkedList<SyntaxHighlighter.Span> spans = new LinkedList<>();
                         {
                             long s = System.currentTimeMillis();

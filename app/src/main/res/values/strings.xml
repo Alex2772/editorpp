@@ -76,6 +76,7 @@
     <string name="search_wrapped">Search wrapped</string>
     <string name="invalid_escaped_string_last_slash">Invalid escaped string: last slash</string>
     <string name="invalid_escaped_string_invalid_char">Invalid escaping char: %c</string>
+    <string name="too_many_occurrences_first_1000">Too many occurrences, displaying first 1000</string>
     <plurals name="occurrence_count">
         <item quantity="zero">No occurrences</item>
         <item quantity="other">%d occurrences</item>

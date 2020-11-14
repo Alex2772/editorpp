@@ -1,8 +1,6 @@
 package ru.alex2772.editorpp.activity.editor.tools.findreplace;
 
 import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.app.assist.AssistStructure;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,13 +9,12 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.UnderlineSpan;
-import android.util.JsonReader;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,9 +30,11 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ru.alex2772.editorpp.R;
 import ru.alex2772.editorpp.activity.editor.EditorActivity;
@@ -58,7 +57,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private CheckBox mWrapCheckbox;
     private CheckBox mMatchCaseCheckbox;
     private RadioButton mSpecialSymbolsRadio;
-    private RadioButton mRagioRadio;
+    private RadioButton mRegexRadio;
+    private RadioButton mNormalRadio;
     private View mButtonFindUp;
     private View mButtonFindDown;
     private final ArrayList<Integer> mFindEntries = new ArrayList<>();
@@ -157,11 +157,30 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         if (nearestPos == -1)
             return false;
 
-        mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
-        mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        mEditor.scrollToCursor();
+        selectOccurrence(nearestPos);
         return true;
     }
+
+    private void selectOccurrence(int nearestPos) {
+        try {
+            if (!mNormalRadio.isChecked()) {
+                FindHighlightSpan[] span = mEditor.getText().getSpans(nearestPos, nearestPos + 1, FindHighlightSpan.class);
+                if (span != null) {
+                    int end = mEditor.getText().getSpanEnd(span[0]);
+                    mEditor.getEditor().setSelection(nearestPos, end);
+                    mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    mEditor.scrollToCursor();
+                }
+            } else {
+                mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
+                mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                mEditor.scrollToCursor();
+            }
+        } catch (Exception e) {
+            Log.e("++", "Could not highlight next search occurrence", e);
+        }
+    }
+
     private int findNearestOccurrence(Direction direction) {
         int start = mEditor.getEditor().getSelectionStart();
         synchronized (mFindEntries) {
@@ -201,10 +220,11 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             return nearestPos;
         }
     }
-    private boolean goToOccurrence(Direction direction) {
+    private boolean goToFirstOccurrence(Direction direction) {
         for (FindSpan s : mEditor.getText().getSpans(0, mEditor.getEditor().getEditableText().length(), FindBorderHighlightSpan.class)) {
             mEditor.getText().removeSpan(s);
         }
+
         int start = mEditor.getEditor().getSelectionStart();
 
 
@@ -245,9 +265,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                 return false;
             }
 
-            mEditor.getEditor().setSelection(nearestPos, nearestPos + mFindQueryEdit.getText().length());
-            mEditor.getText().setSpan(new FindBorderHighlightSpan(), nearestPos, nearestPos + mFindQueryEdit.getText().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            mEditor.scrollToCursor();
+            selectOccurrence(nearestPos);
 
             return true;
         }
@@ -373,8 +391,9 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                 updateSearchOccurrences(true);
             }
         });
+        mNormalRadio = mView.findViewById(R.id.normal);
         mSpecialSymbolsRadio = mView.findViewById(R.id.special_symbols);
-        mRagioRadio = mView.findViewById(R.id.regex);
+        mRegexRadio = mView.findViewById(R.id.regex);
 
 
         mView.findViewById(R.id.button_count).setOnClickListener(new View.OnClickListener() {
@@ -420,7 +439,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
 
         final boolean matchCase = mMatchCaseCheckbox.isChecked();
         final boolean isSpecialSymbols = mSpecialSymbolsRadio.isChecked();
-        final boolean isRegex = mRagioRadio.isChecked();
+        final boolean isRegex = mRegexRadio.isChecked();
 
         MTP.schedule(new Runnable() {
             @Override
@@ -433,7 +452,8 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                         t = t.toLowerCase();
                         q = q.toLowerCase();
                     }
-
+                    // \\
+                    int backSlashSizeOffset = 0;
                     if (isSpecialSymbols) {
                         boolean escapeNext = false;
                         StringBuilder newString = new StringBuilder();
@@ -480,6 +500,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                 }
                             } else if (currentChar == '\\') {
                                 escapeNext = true;
+                                backSlashSizeOffset -= 2;
                             } else {
                                 newString.append(currentChar);
                             }
@@ -496,14 +517,73 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                         q = newString.toString();
                     }
 
-                    int index = 0;
+                    if (isRegex) {
+                        final LinkedList<Integer> findEndEntries = new LinkedList<>();
+                        try {
+                            Pattern pattern = Pattern.compile(q);
+                            Matcher matcher = pattern.matcher(t);
+                            while (matcher.find()) {
+                                if (matcher.start() != matcher.end()) {
+                                    mFindEntries.add(matcher.start());
+                                    findEndEntries.add(matcher.end());
+                                    if (tooManyOccurrences())
+                                        return;
+                                }
+                            }
+                        } catch (final Exception e) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setErrorString(e.getMessage());
+                                }
+                            });
+                        } finally {
+                            if (select) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        synchronized (mFindEntries) {
+                                            Iterator<Integer> i = findEndEntries.iterator();
+                                            for (int indexCopy : mFindEntries) {
+                                                mEditor.getText().setSpan(new FindHighlightSpan(),
+                                                        indexCopy,
+                                                        i.next(),
+                                                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        int index = 0;
 
-                    for (; ; ) {
-                        index = t.indexOf(q, index + 1);
-                        if (index >= 0) {
-                            mFindEntries.add(index);
-                        } else {
-                            break;
+                        for (; ; ) {
+                            index = t.indexOf(q, index + 1);
+                            if (index >= 0) {
+                                mFindEntries.add(index);
+                                if (tooManyOccurrences())
+                                    return;
+                            } else {
+                                break;
+                            }
+                        }
+
+                        if (select) {
+                            final int backSlashSizeOffsetCopy = backSlashSizeOffset;
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    synchronized (mFindEntries) {
+                                        for (int indexCopy : mFindEntries) {
+                                            mEditor.getText().setSpan(new FindHighlightSpan(),
+                                                    indexCopy,
+                                                    indexCopy + query.length() + backSlashSizeOffsetCopy,
+                                                    SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                    }
+                                }
+                            });
                         }
                     }
 
@@ -512,21 +592,17 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                             @Override
                             public void run() {
                                 synchronized (mFindEntries) {
-                                    for (int indexCopy : mFindEntries) {
-                                        mEditor.getText().setSpan(new FindHighlightSpan(),
-                                                indexCopy,
-                                                indexCopy + query.length(),
-                                                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    }
                                     if (mFindEntries.isEmpty()) {
-                                        setErrorString(getResources().getQuantityString(R.plurals.occurrence_count, 0, 0));
+                                        setErrorString(getResources().getQuantityString(
+                                                R.plurals.occurrence_count,
+                                                0,
+                                                0));
                                         return;
                                     } else {
-                                        setErrorString(null
-                                        );
+                                        setErrorString(null);
                                     }
                                 }
-                                goToOccurrence(Direction.DOWN);
+                                goToFirstOccurrence(Direction.DOWN);
                             }
                         });
                     }
@@ -534,6 +610,19 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             }
 
         });
+    }
+
+    private boolean tooManyOccurrences() {
+        if (mFindEntries.size() >= 1000) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setErrorString(R.string.too_many_occurrences_first_1000);
+                }
+            });
+            return true;
+        }
+        return false;
     }
 
     private void setErrorString(@StringRes int errorString) {

@@ -61,7 +61,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_baseline_arrow_downward_24"
-                    app:layout_constraintEnd_toEndOf="@+id/text_to_find_label"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/find_query" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,19 +79,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Replace with:"
-                app:layout_constraintStart_toStartOf="@+id/wrap_checkbox"
-                app:layout_constraintTop_toBottomOf="@+id/wrap_checkbox" />
+                app:layout_constraintStart_toStartOf="@+id/checkbox_wrap"
+                app:layout_constraintTop_toBottomOf="@+id/checkbox_wrap" />
 
             <CheckBox
-                android:id="@+id/checkBox4"
+                android:id="@+id/checkbox_match_case"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Match case"
-                app:layout_constraintStart_toEndOf="@+id/wrap_checkbox"
-                app:layout_constraintTop_toTopOf="@+id/wrap_checkbox" />
+                app:layout_constraintStart_toEndOf="@+id/checkbox_wrap"
+                app:layout_constraintTop_toTopOf="@+id/checkbox_wrap" />
 
             <CheckBox
-                android:id="@+id/wrap_checkbox"
+                android:id="@+id/checkbox_wrap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"

@@ -46,6 +46,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
     private View mTextToFindLabel;
     private EditText mFindQueryEdit;
     private CheckBox mWrapCheckbox;
+    private CheckBox mMatchCaseCheckbox;
     private View mButtonFindUp;
     private View mButtonFindDown;
     private final ArrayList<Integer> mFindEntries = new ArrayList<>();
@@ -316,11 +317,20 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             }
         });
 
-        mWrapCheckbox = mView.findViewById(R.id.wrap_checkbox);
+        mWrapCheckbox = mView.findViewById(R.id.checkbox_wrap);
         mWrapCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 updateSearchButtonsDisability();
+            }
+        });
+
+        mMatchCaseCheckbox = mView.findViewById(R.id.checkbox_match_case);
+        mMatchCaseCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                updateSearchOccurrences(true);
+                hideBackground();
             }
         });
 
@@ -363,15 +373,24 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
         final String query = mFindQueryEdit.getText().toString();
         if (query.isEmpty())
             return;
+
+        final boolean matchCase = mMatchCaseCheckbox.isChecked();
+
         MTP.schedule(new Runnable() {
             @Override
             public void run() {
                 synchronized (mFindEntries) {
+                    String t = text;
+                    String q = query;
                     mFindEntries.clear();
+                    if (!matchCase) {
+                        t = t.toLowerCase();
+                        q = q.toLowerCase();
+                    }
                     int index = 0;
 
                     for (; ; ) {
-                        index = text.indexOf(query, index + 1);
+                        index = t.indexOf(q, index + 1);
                         if (index >= 0) {
                             mFindEntries.add(index);
                         } else {
@@ -392,7 +411,6 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                     }
                                 }
                                 goToOccurrence(Direction.DOWN);
-                                showOccurrencesCount();
                             }
                         });
                     }

@@ -294,9 +294,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 clearAllSpans();
-                if (charSequence.length() > 0)
-                    hideBackground();
-                else {
+                if (charSequence.length() == 0) {
                     showBackground();
                     return;
                 }
@@ -542,6 +540,7 @@ public class FindReplaceFragment extends Fragment implements ValueAnimator.Anima
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        hideBackground();
                                         synchronized (mFindEntries) {
                                             Iterator<Integer> i = findEndEntries.iterator();
                                             for (int indexCopy : mFindEntries) {

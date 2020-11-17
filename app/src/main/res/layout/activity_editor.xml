@@ -115,6 +115,9 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:context=".activity.main.ScrollingActivity">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <ru.alex2772.editorpp.view.HighlightEditText
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
@@ -128,6 +131,16 @@
                 android:overScrollMode="always"
                 android:scrollbarStyle="insideInset"
                 android:scrollbars="vertical|horizontal" />
+
+                <!--
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/cursor"
+                    android:layout_marginTop="38dp"
+                    android:layout_marginLeft="71dp"
+                    />-->
+            </FrameLayout>
 
         </androidx.core.widget.NestedScrollView>
 

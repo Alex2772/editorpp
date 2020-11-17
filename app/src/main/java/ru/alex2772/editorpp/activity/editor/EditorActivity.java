@@ -662,6 +662,10 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+                mDrawerLayout.closeDrawer(GravityCompat.END);
+                return true;
+            }
             closeFile();
             return mTabs.isEmpty();
         }

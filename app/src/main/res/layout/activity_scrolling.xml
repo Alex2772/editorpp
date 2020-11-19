@@ -32,7 +32,7 @@
                 android:paddingRight="@dimen/activity_horizontal_margin">
 
                 <Button
-                    android:id="@+id/new_file"
+                    android:id="@+id/action_new_file"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_margin="8dp"
@@ -56,7 +56,7 @@
                     android:paddingLeft="8dp"
                     android:text="@string/open_file"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/new_file"
+                    app:layout_constraintStart_toEndOf="@+id/action_new_file"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

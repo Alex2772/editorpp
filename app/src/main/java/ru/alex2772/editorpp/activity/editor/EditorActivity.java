@@ -16,7 +16,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -99,6 +98,12 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
     private int mLastHighlightEnd = 0;
 
     private static final int HIGHLIGHT_BIAS_OFFSET = 500;
+
+    /**
+     * \brief Becomes true then user explicitly wants to exit the application by clicking "Exit"
+     *        menu item.
+     */
+    private boolean mExitRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,37 +209,43 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             public void onClick(View v) {
                 PopupMenu p = new PopupMenu(EditorActivity.this, v);
                 p.inflate(R.menu.menu_editor);
-                MenuItem setSyntax = p.getMenu().findItem(R.id.set_syntax);
+                MenuItem setSyntax = p.getMenu().findItem(R.id.action_set_syntax);
 
                 int counter = 0;
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.open: {
+                            case R.id.action_open: {
                                 open();
                                 break;
                             }
-                            case R.id.new_file: {
+                            case R.id.action_new_file: {
                                 String file = getResources().getString(R.string.new_file) + " " + ++newFileCounter + ".txt";
                                 mTabs.add(new FileTabModel(file, file));
                                 setCurrentTab(mTabs.size() - 1);
                                 break;
                             }
-                            case R.id.save_dummy:
+                            case R.id.action_save_dummy:
                                 saveDummy();
                                 break;
-                            case R.id.save_as:
+                            case R.id.action_save_as:
                                 saveAs();
                                 break;
-                            case R.id.find_replace:
+                            case R.id.action_find_replace:
                                 mDrawerLayout.openDrawer(GravityCompat.END);
                                 break;
-                            case R.id.settings:
+                            case R.id.action_settings:
                                 startActivity(new Intent(EditorActivity.this, SettingsActivity.class));
                                 break;
                             case R.id.action_about:
                                 startActivity(new Intent(EditorActivity.this, AboutActivity.class));
+                                break;
+                            case R.id.action_exit:
+                                mExitRequested = true;
+                                if (closeFile()) {
+                                    exitApplication();
+                                }
                                 break;
                         }
                         return false;
@@ -382,6 +393,15 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
             }
         });
     }
+
+    private void exitApplication() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            finishAffinity();
+        } else {
+            finish();
+        }
+    }
+
     public Editable getText() {
         return mEdit.getText();
     }
@@ -801,8 +821,13 @@ public class EditorActivity extends AppCompatActivity implements HighlightEditTe
                 mTabsAdapter.notifyDataSetChanged();
         }
 
-        if (mTabs.isEmpty())
-            finish();
+        if (mTabs.isEmpty()) {
+            if (mExitRequested) {
+                exitApplication();
+            } else {
+                finish();
+            }
+        }
     }
 
     @Override

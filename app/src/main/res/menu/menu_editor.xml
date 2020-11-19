@@ -4,28 +4,32 @@
         android:title="@string/file">
         <menu>
             <item
-                android:id="@+id/new_file"
+                android:id="@+id/action_new_file"
                 android:title="@string/new_" />
             <item
-                android:id="@+id/open"
+                android:id="@+id/action_open"
                 android:title="@string/open" />
             <item
-                android:id="@+id/save_dummy"
+                android:id="@+id/action_save_dummy"
                 android:title="@string/save" />
             <item
-                android:id="@+id/save_as"
+                android:id="@+id/action_save_as"
                 android:title="@string/save_as" />
         </menu>
     </item>
-    <item android:id="@+id/set_syntax" android:title="@string/set_syntax" >
+    <item android:id="@+id/action_set_syntax" android:title="@string/set_syntax" >
         <menu />
     </item>
-    <item android:id="@+id/find_replace" android:title="@string/find_replace"  />
     <item
-        android:id="@+id/settings"
+        android:id="@+id/action_find_replace"
+        android:title="@string/find_replace"  />
+    <item
+        android:id="@+id/action_settings"
         android:title="@string/action_settings" />
     <item
         android:id="@+id/action_about"
         android:title="@string/action_about" />
-    <item android:title="@string/exit" />
+    <item
+        android:id="@+id/action_exit"
+        android:title="@string/exit" />
 </menu>

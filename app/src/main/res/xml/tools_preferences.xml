@@ -17,7 +17,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 <PreferenceCategory
-    android:title="Bottom panel">
+    android:title="@string/bottom_panel">
     <CheckBoxPreference
         android:key="bp_tab"
         app:defaultValue="true"

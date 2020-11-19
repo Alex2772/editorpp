@@ -99,7 +99,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/cardview_top_padding"
                         android:gravity="bottom"
-                        android:text="Theme"
+                        android:text="@string/theme"
                         android:textAllCaps="true"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"

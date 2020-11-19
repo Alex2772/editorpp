@@ -52,4 +52,8 @@
     <string name="set_syntax">Синтаксис</string>
     <string name="exit">Выход</string>
     <string name="source_code">Source code</string>
+    <string name="common">Общие</string>
+    <string name="highlight">Подсветка</string>
+    <string name="bottom_panel">Нижняя панель</string>
+    <string name="theme">Тема</string>
 </resources>

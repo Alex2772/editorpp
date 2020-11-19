@@ -116,6 +116,10 @@
     <string name="trackpad_like_controller">Trackpad-like cursor position controller</string>
     <string name="new_line">New line (NL)</string>
     <string name="leaves_current_line_makes_blank_line">Leaves the current line and makes next new blank line. Independent of cursor\'s horizontal position</string>
+    <string name="common">Common</string>
+    <string name="highlight">Highlight</string>
+    <string name="bottom_panel">Bottom panel</string>
+    <string name="theme">Theme</string>
     <plurals name="occurrence_count">
         <item quantity="zero">No occurrences</item>
         <item quantity="other">%d occurrences</item>

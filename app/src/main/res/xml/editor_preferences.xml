@@ -15,7 +15,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Common">
+    <PreferenceCategory android:title="@string/common">
 
         <SwitchPreference
             android:defaultValue="true"
@@ -37,7 +37,7 @@
             android:summaryOn="@string/editor_will_always_open_big_files"
             android:title="@string/ignore_file_size" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Highlight">
+    <PreferenceCategory android:title="@string/highlight">
 
         <CheckBoxPreference
             android:defaultValue="true"

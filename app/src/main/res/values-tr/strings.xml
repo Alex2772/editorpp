@@ -106,4 +106,8 @@ Bu uygulama, varsayılan yazı tipi olarak JetBrains Mono kullanır. Daha fazla 
     <string name="v7_preference_on">AÇIK</string>
     <string name="yesterday">Dün</string>
     <string name="source_code">Source code</string>
+    <string name="common">Genel</string>
+    <string name="highlight">Vurgulama</string>
+    <string name="bottom_panel">Alt Panel</string>
+    <string name="theme">Tema</string>
 </resources>

@@ -52,10 +52,10 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onSupportNavigateUp() {
-        if (getSupportFragmentManager().popBackStackImmediate()) {
-            return true;
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            finish();
         }
-        return super.onSupportNavigateUp();
+        return true;
     }
 
     @Override

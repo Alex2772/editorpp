@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="occurrence_count">
+        <item quantity="zero">Oluşum yok</item>
+        <item quantity="one">%d oluşum</item>
+        <item quantity="other">%d oluşum</item>
+    </plurals>
+</resources>
